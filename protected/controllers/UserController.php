@@ -220,13 +220,9 @@ class UserController extends Controller {
 
 
 	public function actionRestore($id){
-		/*if(!$this->_post)
-		{
-			$this->renderError('Post ID does not exist.');
-		}*/
 		$user = User::model()->findByPk($id);
 		if(!$user) {
-			$this->renderError('Post ID does not exist.');
+			$this->renderError('User ID does not exist.');
 		}
 		else {       
 			$user->status = 1;
