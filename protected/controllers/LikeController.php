@@ -17,4 +17,17 @@ class LikeController extends Controller {
             $this->renderError('ERROR.');
         }
     }
+
+    public function actionDelete($id){
+        $like = Like::model()->findByPk($id);
+        if(!$like) {
+            $this->renderError('Like ID does not exist.');
+        }
+        else {       
+            $like->status = 2;
+            $like->save();
+            $this->renderSuccess(array('success'=>"Like removed."));
+        }
+    }
+
 }
