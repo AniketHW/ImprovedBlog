@@ -8,7 +8,7 @@ class UserController extends Controller {
 
 	public function filters() {
 		return array(
-			'checkUser + profile, login, posts, comments, likes, history, status, delete, restore',
+			'checkUser + profile, login, posts, comments, likes, count, status, delete, restore',
 			'findPosts + posts',
 			'findComments + comments',
 			'findLikes + likes'
@@ -20,7 +20,8 @@ class UserController extends Controller {
 			$this->renderError('Please enter User ID.');
 		}
 		else {
-			$this->_user = User::model()->active()->findByPk($_GET['id']);        
+			$this->_user = User::model()->active()->findByPk($_GET['id']);   
+			     
 		}
 		$filterChain->run();
 	}
@@ -165,7 +166,7 @@ class UserController extends Controller {
 		}
 	}
 
-	public function actionHistory($id) {
+	public function actionCount($id) {
 
 		if(!$this->_user) {
 			$this->renderError('The Account ID you entered does not exist. Please try again later.');
@@ -175,7 +176,7 @@ class UserController extends Controller {
 			$no_of_posts = $this->_user->post_count;
 			$no_of_comments = $this->_user->comment_count;
 			$no_of_likes = $this->_user->like_count;
-			echo "$name has published $no_of_posts post(s).<br>He has posted $no_of_comments comment(s) and has liked $no_of_likes different post(s).";
+			$this->renderSuccess(array('message'=>"$name has published $no_of_posts post(s).<br>He has posted $no_of_comments comment(s) and has liked $no_of_likes different post(s)."));
 		}
 	}
 
