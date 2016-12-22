@@ -21,7 +21,7 @@ class UserController extends Controller {
 		}
 		else {
 			$this->_user = User::model()->active()->findByPk($_GET['id']);   
-			     
+			
 		}
 		$filterChain->run();
 	}
@@ -200,8 +200,7 @@ class UserController extends Controller {
 			$this->renderError('User ID does not exist.');
 		}
 		else {
-			$status=$this->_user->status;
-			echo "$status";
+			$this->renderSuccess(array('status'=>$this->_user->status));
 		}
 
 	}

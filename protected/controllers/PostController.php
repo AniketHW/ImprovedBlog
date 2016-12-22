@@ -16,7 +16,6 @@ class PostController extends Controller {
 		}
 		else {
 			$this->_post = Post::model()->active()->findByPk($_GET['id']);
-		//$post = Post::model()->findByPk($id);
 			$filterChain->run();
 		}
 	} 
@@ -126,10 +125,6 @@ class PostController extends Controller {
 	}
 
 	public function actionRestore($id){
-        /*if(!$this->_post)
-        {
-            $this->renderError('Post ID does not exist.');
-        }*/
         $post = Post::model()->findByPk($id);
         if(!$post) {
         	$this->renderError('Post ID does not exist.');

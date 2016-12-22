@@ -68,7 +68,7 @@ class CommentController extends Controller {
 		else {       
 			$this->_comment->content = $content;
 			$this->_comment->save();
-			$this->renderSuccess(array('success'=>"Content successfully updated."));
+			$this->renderSuccess(array('success'=>"Comment successfully updated."));
 		}
 	}
 }

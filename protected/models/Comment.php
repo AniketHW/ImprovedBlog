@@ -11,7 +11,7 @@
  class Comment extends CActiveRecord
  {
 
- 	const STATUS_ACTIVE = 1;
+ 	const STATUS_ACTIVE =  1;
  	const STATUS_DELETED = 2;
 
  	public static function model($className=__CLASS__) {
