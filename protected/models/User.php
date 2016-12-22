@@ -48,6 +48,16 @@
  			);
  	}
 
+ 	public function deactivate() { 		
+		$this->status = self::STATUS_INACTIVE;
+		$this->save();
+	}
+
+	public function activate() {
+		$this->status = self::STATUS_ACTIVE;
+		$this->save();
+	}
+
  	public function beforeSave() {
  		if($this->isNewRecord) { 
  			$this->status = self::STATUS_ACTIVE;

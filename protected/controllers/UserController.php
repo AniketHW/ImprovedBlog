@@ -8,7 +8,7 @@ class UserController extends Controller {
 
 	public function filters() {
 		return array(
-			'checkUser + profile, login, posts, comments, likes, count, status, delete, restore',
+			'checkUser + profile, login, posts, comments, likes, count, status, delete',
 			'findPosts + posts',
 			'findComments + comments',
 			'findLikes + likes'
@@ -61,8 +61,7 @@ class UserController extends Controller {
 	}
 
 	public function actionIndex() {
-		echo "If you're a new user use /create to Sign Up.<br>";
-		echo "If not, login using /login&id=[Your user ID] to Login.<br>";
+		$this->renderSuccess(array('message'=>"If you're a new user use /create to Sign Up.<br>If not, login using /login&id=[Your user ID] to Login."));
 	}
 
 	public function actionCreate() {
@@ -115,8 +114,7 @@ class UserController extends Controller {
 				$posts_data[] = array('id'=>$post->id, 'title'=>$post->title);        
 			}
 			$no_of_posts = $this->_user->post_count;
-			echo "Number of posts = $no_of_posts<br>";
-			$this->renderSuccess(array('posts_data'=>$posts_data));
+			$this->renderSuccess(array('no_of_posts'=>$no_of_posts,'posts_data'=>$posts_data));
 		}
 	}
 
@@ -129,7 +127,6 @@ class UserController extends Controller {
 			else {
 				$this->renderSuccess(array('This user has not commented on any posts yet.')); 
 			}
-
 		}
 		else {
 			$comments_data = array();
@@ -138,8 +135,7 @@ class UserController extends Controller {
 				
 			}
 			$no_of_comments = $this->_user->comment_count;
-			echo "Number of comments = $no_of_comments<br>";
-			$this->renderSuccess(array('comments_data'=>$comments_data));
+			$this->renderSuccess(array('no_of_comments'=>$no_of_comments,'comments_data'=>$comments_data));
 		}
 	}
 
@@ -154,15 +150,13 @@ class UserController extends Controller {
 			}
 
 		}
-
 		else {
 			$likes_data = array();
 			foreach ($this->_likes as $like) {
 				$likes_data[] = array('id'=>$like->id, 'post_id'=>$like->post_id);
 			}
 			$no_of_likes = $this->_user->like_count;
-			echo "Number of likes = $no_of_likes<br>";
-			$this->renderSuccess(array('likes_data'=>$likes_data));
+			$this->renderSuccess(array('no_of_likes'=>$no_of_likes,'likes_data'=>$likes_data));
 		}
 	}
 
@@ -211,9 +205,9 @@ class UserController extends Controller {
 			$this->renderError('User ID does not exist.');
 		}
 		else {       
-			$this->_user->status = 2;
+			$this->_user->deactivate();
 			$this->_user->save();
-			$this->renderSuccess(array('success'=>"Account deleted."));
+			$this->renderSuccess(array('message'=>"Account deleted."));
 		}
 	}
 
@@ -225,9 +219,14 @@ class UserController extends Controller {
 			$this->renderError('User ID does not exist.');
 		}
 		else {       
-			$user->status = 1;
-			$user->save();
-			$this->renderSuccess(array('success'=>"Account restored."));
+			if($user->status!=User::STATUS_ACTIVE){
+				$user->activate();
+				$user->save();
+				$this->renderSuccess(array('message'=>"Account restored."));
+			}
+			else {
+				$this->renderSuccess(array('message'=>"Account already exists."));
+			}
 		}
 	}
 

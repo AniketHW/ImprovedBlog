@@ -5,7 +5,7 @@ class CommentController extends Controller {
 
 	public function filters() {
 		return array(
-			'checkPost + delete, restore, update'
+			'checkPost + delete, update'
 			);
 	}
 
@@ -15,19 +15,19 @@ class CommentController extends Controller {
 		}
 		else {
 			$this->_comment = Comment::model()->active()->findByPk($_GET['id']);
-			$filterChain->run();
 		}
+		$filterChain->run();		
 	} 
 
 	public function actionIndex() {
-		echo "Enter a Comment using /create.";
+		$this->renderSuccess(array('message'=>"Enter a Comment using /create."));
 	}
 
 	public function actionCreate() {
 		if(isset($_POST['Comment'])) {
 			$comment = Comment::create($_POST['Comment']);
 			if(!$comment->errors) {
-				$this->renderSuccess(array('comment_id'=>$comment->id));
+				$this->renderSuccess(array('comment_id'=>$comment->id,'content'=>$comment->content,'user_id'=>$comment->user_id,'post_id'=>$comment->post_id));
 			} else {
 				$this->renderError($this->getErrorMessageFromModelErrors($comment));
 			}
@@ -42,8 +42,7 @@ class CommentController extends Controller {
 			$this->renderError('Comment ID does not exist.');
 		}
 		else {       
-			$this->_comment->status = 2;
-			$this->_comment->save();
+			$this->_comment->deactivate();
 			$this->renderSuccess(array('success'=>"Comment deleted."));
 		}
 	}
@@ -53,10 +52,16 @@ class CommentController extends Controller {
 		if(!$comment) {
 			$this->renderError('Comment ID does not exist.');
 		}
-		else {       
-			$comment->status = 1;
-			$comment->save();
-			$this->renderSuccess(array('success'=>"Comment restored."));
+		else { 
+			if($comment->status!=Comment::STATUS_ACTIVE){
+				$comment->activate();
+				$comment->save();
+				$this->renderSuccess(array('message'=>"Comment restored."));
+			}
+			else {
+				$this->renderSuccess(array('message'=>"Comment already exists."));
+			}
+
 		}
 	}
 
@@ -68,7 +73,7 @@ class CommentController extends Controller {
 		else {       
 			$this->_comment->content = $content;
 			$this->_comment->save();
-			$this->renderSuccess(array('success'=>"Comment successfully updated."));
+			$this->renderSuccess(array('message'=>"Comment successfully updated."));
 		}
 	}
 }
