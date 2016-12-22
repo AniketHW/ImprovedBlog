@@ -95,9 +95,9 @@ class PostController extends Controller {
 		}
 		else {
 			foreach ($posts as $post) {
-				$this->renderSuccess(array('post_id'=>$post->id,'title'=>$post->title,'content'=>$post->content));
-				echo "<br>";
+				$posts_data[] = array('post_id'=>$post->id,'title'=>$post->title,'content'=>$post->content);				
 			}
+			$this->renderSuccess(array('post_match'=>$posts_data));	
 		}
 	} 
 
@@ -112,7 +112,7 @@ class PostController extends Controller {
 
 	}
 
-	public function actionDelete($id){
+	public function actionDelete($id) {
 		if(!$this->_post)
 		{
 			$this->renderError('Post ID does not exist.');
@@ -125,41 +125,41 @@ class PostController extends Controller {
 	}
 
 	public function actionRestore($id){
-        $post = Post::model()->findByPk($id);
-        if(!$post) {
-        	$this->renderError('Post ID does not exist.');
-        }
-        else {       
-        	$post->status = 1;
-        	$post->save();
-        	$this->renderSuccess(array('success'=>"Post restored."));
-        }
-    }
+		$post = Post::model()->findByPk($id);
+		if(!$post) {
+			$this->renderError('Post ID does not exist.');
+		}
+		else {       
+			$post->status = 1;
+			$post->save();
+			$this->renderSuccess(array('success'=>"Post restored."));
+		}
+	}
 
-    public function actionTitle($id,$title){
-    	if(!$this->_post)
-    	{
-    		$this->renderError('Post ID does not exist.');
-    	}
-    	else {       
-    		$this->_post->title = $title;
-    		$this->_post->save();
-    		$this->renderSuccess(array('success'=>"Title successfully updated."));
-    	}
-    }
+	public function actionTitle($id,$title){
+		if(!$this->_post)
+		{
+			$this->renderError('Post ID does not exist.');
+		}
+		else {       
+			$this->_post->title = $title;
+			$this->_post->save();
+			$this->renderSuccess(array('success'=>"Title successfully updated."));
+		}
+	}
 
-    public function actionContent($id,$content){
-    	if(!$this->_post)
-    	{
-    		$this->renderError('Post ID does not exist.');
-    	}
-    	else {       
-    		$this->_post->content = $content;
-    		$this->_post->save();
-    		$this->renderSuccess(array('success'=>"Content successfully updated."));
-    	}
-    }
-    
+	public function actionContent($id,$content){
+		if(!$this->_post)
+		{
+			$this->renderError('Post ID does not exist.');
+		}
+		else {       
+			$this->_post->content = $content;
+			$this->_post->save();
+			$this->renderSuccess(array('success'=>"Content successfully updated."));
+		}
+	}
+
 }
 
 

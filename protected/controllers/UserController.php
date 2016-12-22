@@ -21,7 +21,7 @@ class UserController extends Controller {
 		}
 		else {
 			$this->_user = User::model()->active()->findByPk($_GET['id']);   
-			
+
 		}
 		$filterChain->run();
 	}
@@ -188,9 +188,9 @@ class UserController extends Controller {
 		}
 		else {
 			foreach ($users as $user) {
-				$this->renderSuccess(array('user_id'=>$user->id,'name'=>$user->name,'email'=>$user->email));
-				echo "<br>";
+				$users_data[] = array('user_id'=>$user->id,'name'=>$user->name,'email'=>$user->email);
 			}
+			$this->renderSuccess(array('user_match'=>$users_data));	
 		}
 	} 
 
