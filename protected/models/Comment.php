@@ -41,13 +41,23 @@
 
  	public function scopes() {
  		return array(
- 			'active' => array('condition'=>'t.status = 1'),
+ 			'active' => array('condition'=>"{$this->tableAlias}.status = :one",'params'=>array('one'=>self::STATUS_ACTIVE))
  			);
  	}
 
+ 	public function deactivate() { 		
+		$this->status = self::STATUS_DELETED;
+		$this->save();
+	}
+
+	public function activate() {
+		$this->status = self::STATUS_ACTIVE;
+		$this->save();
+	}
+
  	public function beforeSave() {
  		if($this->isNewRecord) { 
- 			$this->status = self::STATUS_SUCCESS;
+ 			$this->status = self::STATUS_ACTIVE;
  			$this->created_at = time();
  		}
  		$this->updated_at = time();

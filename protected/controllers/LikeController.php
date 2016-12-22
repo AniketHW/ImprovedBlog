@@ -2,7 +2,7 @@
 class LikeController extends Controller {
 
 	public function actionIndex() {
-		echo "Like a post? Show your appreciation using /create!";
+		$this->renderSuccess(array('message'=>"Like a post? Show your appreciation using /like!"));
 	}
 
 	public function actionCreate() {
@@ -24,7 +24,7 @@ class LikeController extends Controller {
 			$this->renderError('Like ID does not exist.');
 		}
 		else {       
-			$like->status = 2;
+			$like->deactivate();
 			$like->save();
 			$this->renderSuccess(array('success'=>"Like removed."));
 		}

@@ -49,6 +49,16 @@ class Post extends CActiveRecord {
 			);
 	}
 
+	public function deactivate() { 		
+		$this->status = self::STATUS_DELETED;
+		$this->save();
+	}
+
+	public function activate() {
+		$this->status = self::STATUS_ACTIVE;
+		$this->save();
+	}
+
 	public function beforeSave() {
 		if($this->isNewRecord) { 
 			$this->status = self::STATUS_ACTIVE;

@@ -21,9 +21,7 @@ class PostController extends Controller {
 	} 
 
 	public function actionIndex() {
-		echo "Create new posts by using /create.<br>";
-		echo "View an existing post by using /view.<br>";
-		echo "View details regarding comments and likes by using /comments and /likes.";
+		$this->renderSuccess(array('message'=>"Use /create to make a new post and /view to read existing posts."));
 	}
 
 	public function actionCreate() {
@@ -60,17 +58,16 @@ class PostController extends Controller {
 		else {
 			$comments = $this->_post->comments;
 			$no_of_comments = $this->_post->comment_count;
-			echo "$no_of_comments different comment(s) about this post have been posted.<br>";
 			foreach ($comments as $comment) {
-				$this->renderSuccess(array('user_id'=>$comment->user_id,'content'=>$comment->content));
-				echo "<br>";
+				$comments_data[] = array('id'=>$comment->id, 'content'=>$comment->content);
 			}
-
+			$this->renderSuccess(array('no_of_comments'=>$no_of_comments,'comments_data'=>$comments_data));
 		}
+
 	}
-	
+
 	public function actionLikes($id) {
-		
+
 		if(!$this->_post)
 		{
 			$this->renderError('Post ID does not exist.');
@@ -78,14 +75,12 @@ class PostController extends Controller {
 		else {
 			$likes = $this->_post->likes;
 			$no_of_likes = $this->_post->like_count;
-			echo "This post has received $no_of_likes like(s).<br>";
 			foreach ($likes as $like) {
-				$this->renderSuccess(array('user_id'=>$like->user_id));
-				echo "<br>";
+				$likes_data[]= array('id'=>$like->id,'user_id'=>$like->user_id);
 			}
-		} 
-		
-	}
+			$this->renderSuccess(array('no_of_likes'=>$no_of_likes,'likes_data'=>$likes_data));			
+		}
+	} 	
 
 	public function actionSearch($str) { 
 		$posts = Post::model()->findAll(array('condition'=>"content LIKE :str AND status=1",'params'=>array('str'=>"%$str%")));
@@ -118,7 +113,7 @@ class PostController extends Controller {
 			$this->renderError('Post ID does not exist.');
 		}
 		else {       
-			$this->_post->status = 2;
+			$this->_post->deactivate();
 			$this->_post->save();
 			$this->renderSuccess(array('success'=>"Post deleted."));
 		}
@@ -130,9 +125,14 @@ class PostController extends Controller {
 			$this->renderError('Post ID does not exist.');
 		}
 		else {       
-			$post->status = 1;
-			$post->save();
-			$this->renderSuccess(array('success'=>"Post restored."));
+			if($post->status!=Post::STATUS_ACTIVE){
+				$post->activate();
+				$post->save();
+				$this->renderSuccess(array('message'=>"Post restored."));
+			}
+			else {
+				$this->renderSuccess(array('message'=>"Post already exists."));
+			}
 		}
 	}
 
@@ -144,7 +144,7 @@ class PostController extends Controller {
 		else {       
 			$this->_post->title = $title;
 			$this->_post->save();
-			$this->renderSuccess(array('success'=>"Title successfully updated."));
+			$this->renderSuccess(array('message'=>"Title successfully updated."));
 		}
 	}
 
@@ -156,7 +156,7 @@ class PostController extends Controller {
 		else {       
 			$this->_post->content = $content;
 			$this->_post->save();
-			$this->renderSuccess(array('success'=>"Content successfully updated."));
+			$this->renderSuccess(array('message'=>"Content successfully updated."));
 		}
 	}
 

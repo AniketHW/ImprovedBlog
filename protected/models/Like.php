@@ -43,6 +43,11 @@
  			);
  	}
 
+ 	public function deactivate() { 		
+ 		$this->status = self::STATUS_DISLIKED;
+ 		$this->save();
+ 	}
+
  	public function beforeSave() {
  		if($this->isNewRecord) { 
  			$this->status = self::STATUS_LIKED;
