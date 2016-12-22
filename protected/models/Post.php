@@ -44,10 +44,11 @@ class Post extends CActiveRecord {
 	}
 
 	public function scopes() {
-		return array(
-			'active' => array('condition'=>'t.status = 1'),
-			);
-	}
+ 		return array(
+ 			'active' => array('condition'=>"{$this->tableAlias}.status = :one",'params'=>array('one'=>self::STATUS_ACTIVE)),
+ 			'inactive' => array('condition'=>"{$this->tableAlias}.status = :two",'params'=>array('two'=>self::STATUS_DELETED))
+ 			);
+ 	}
 
 	public function deactivate() { 		
 		$this->status = self::STATUS_DELETED;

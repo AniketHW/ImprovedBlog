@@ -39,12 +39,18 @@
 
  	public function scopes() {
  		return array(
- 			'active' => array('condition'=>'t.status = 1'),
+ 			'active' => array('condition'=>"{$this->tableAlias}.status = :one",'params'=>array('one'=>self::STATUS_LIKED)),
+ 			'inactive' => array('condition'=>"{$this->tableAlias}.status = :two",'params'=>array('two'=>self::STATUS_DISLIKED))
  			);
  	}
 
  	public function deactivate() { 		
  		$this->status = self::STATUS_DISLIKED;
+ 		$this->save();
+ 	}
+
+ 	public function activate() { 		
+ 		$this->status = self::STATUS_LIKED;
  		$this->save();
  	}
 

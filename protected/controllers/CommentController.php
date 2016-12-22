@@ -5,7 +5,8 @@ class CommentController extends Controller {
 
 	public function filters() {
 		return array(
-			'checkPost + delete, update'
+			'checkPost + delete, update',
+			'checkDeletedPost + restore'
 			);
 	}
 
@@ -18,6 +19,17 @@ class CommentController extends Controller {
 		}
 		$filterChain->run();		
 	} 
+
+	public function filterCheckDeletedPost($filterChain) {
+		if(!isset($_GET['id'])) {
+			$this->renderError('Enter Comment ID.');
+		}
+		else {
+			$this->_comment = Comment::model()->inactive()->findByPk($_GET['id']);
+		}
+		$filterChain->run();		
+	} 
+
 
 	public function actionIndex() {
 		$this->renderSuccess(array('message'=>"Enter a Comment using /create."));
@@ -48,14 +60,12 @@ class CommentController extends Controller {
 	}
 
 	public function actionRestore($id){
-		$comment = Comment::model()->findByPk($id);
-		if(!$comment) {
+		if(!$this->_comment) {
 			$this->renderError('Comment ID does not exist.');
 		}
 		else { 
-			if($comment->status!=Comment::STATUS_ACTIVE){
-				$comment->activate();
-				$comment->save();
+			if($this->_comment->status!=Comment::STATUS_ACTIVE){
+				$this->_comment->activate();
 				$this->renderSuccess(array('message'=>"Comment restored."));
 			}
 			else {

@@ -6,7 +6,8 @@ class PostController extends Controller {
 
 	public function filters() {
 		return array(
-			'checkPost + view, comments, likes, status, delete, title, content'
+			'checkPost + view, comments, likes, status, delete, title, content',
+			'checkDeletedPost + restore'
 			);
 	}
 
@@ -16,6 +17,16 @@ class PostController extends Controller {
 		}
 		else {
 			$this->_post = Post::model()->active()->findByPk($_GET['id']);
+			$filterChain->run();
+		}
+	} 
+
+	public function filterCheckDeletedPost($filterChain) {
+		if(!isset($_GET['id'])) {
+			$this->renderError('Enter Post ID.');
+		}
+		else {
+			$this->_post = Post::model()->inactive()->findByPk($_GET['id']);
 			$filterChain->run();
 		}
 	} 
@@ -56,7 +67,7 @@ class PostController extends Controller {
 			$this->renderError('Post ID does not exist.');
 		}
 		else {
-			$comments = $this->_post->comments;
+			$comments = $this->_post->comments(array('scopes'=>'active'));
 			$no_of_comments = $this->_post->comment_count;
 			foreach ($comments as $comment) {
 				$comments_data[] = array('id'=>$comment->id, 'content'=>$comment->content);
@@ -73,7 +84,7 @@ class PostController extends Controller {
 			$this->renderError('Post ID does not exist.');
 		}
 		else {
-			$likes = $this->_post->likes;
+			$likes = $this->_post->likes(array('scopes'=>'active'));
 			$no_of_likes = $this->_post->like_count;
 			foreach ($likes as $like) {
 				$likes_data[]= array('id'=>$like->id,'user_id'=>$like->user_id);
@@ -114,20 +125,17 @@ class PostController extends Controller {
 		}
 		else {       
 			$this->_post->deactivate();
-			$this->_post->save();
 			$this->renderSuccess(array('success'=>"Post deleted."));
 		}
 	}
 
 	public function actionRestore($id){
-		$post = Post::model()->findByPk($id);
-		if(!$post) {
+		if(!$this->_post) {
 			$this->renderError('Post ID does not exist.');
 		}
 		else {       
-			if($post->status!=Post::STATUS_ACTIVE){
-				$post->activate();
-				$post->save();
+			if($this->_post->status!=Post::STATUS_ACTIVE){
+				$this->_post->activate();
 				$this->renderSuccess(array('message'=>"Post restored."));
 			}
 			else {

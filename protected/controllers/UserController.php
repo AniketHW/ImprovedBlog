@@ -11,7 +11,8 @@ class UserController extends Controller {
 			'checkUser + profile, login, posts, comments, likes, count, status, delete',
 			'findPosts + posts',
 			'findComments + comments',
-			'findLikes + likes'
+			'findLikes + likes',
+			'checkDeletedUser + restore'
 			);
 	}
 
@@ -21,6 +22,17 @@ class UserController extends Controller {
 		}
 		else {
 			$this->_user = User::model()->active()->findByPk($_GET['id']);   
+
+		}
+		$filterChain->run();
+	}
+
+	public function filterCheckDeletedUser($filterChain) {
+		if(!isset($_GET['id'])) {
+			$this->renderError('Please enter User ID.');
+		}
+		else {
+			$this->_user = User::model()->inactive()->findByPk($_GET['id']);   
 
 		}
 		$filterChain->run();
@@ -206,7 +218,6 @@ class UserController extends Controller {
 		}
 		else {       
 			$this->_user->deactivate();
-			$this->_user->save();
 			$this->renderSuccess(array('message'=>"Account deleted."));
 		}
 	}
@@ -214,14 +225,12 @@ class UserController extends Controller {
 
 
 	public function actionRestore($id){
-		$user = User::model()->findByPk($id);
-		if(!$user) {
+		if(!$this->_user) {
 			$this->renderError('User ID does not exist.');
 		}
 		else {       
-			if($user->status!=User::STATUS_ACTIVE){
-				$user->activate();
-				$user->save();
+			if($this->_user->status!=User::STATUS_ACTIVE){
+				$this->_user->activate();
 				$this->renderSuccess(array('message'=>"Account restored."));
 			}
 			else {
