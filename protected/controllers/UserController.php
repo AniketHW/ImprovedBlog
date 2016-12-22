@@ -8,7 +8,7 @@ class UserController extends Controller {
 
 	public function filters() {
 		return array(
-			'checkUser + profile, login, posts, comments, likes, count, status, delete, restore',
+			'checkUser + profile, login, posts, comments, likes, count, status, delete',
 			'findPosts + posts',
 			'findComments + comments',
 			'findLikes + likes'

@@ -5,7 +5,7 @@ class CommentController extends Controller {
 
 	public function filters() {
 		return array(
-			'checkPost + delete, restore, update'
+			'checkPost + delete, update'
 			);
 	}
 

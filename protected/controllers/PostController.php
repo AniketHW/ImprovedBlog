@@ -6,7 +6,7 @@ class PostController extends Controller {
 
 	public function filters() {
 		return array(
-			'checkPost + view, comments, likes, status, delete, restore, title, content'
+			'checkPost + view, comments, likes, status, delete, title, content'
 			);
 	}
 
